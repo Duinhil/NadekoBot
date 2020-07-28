@@ -1293,7 +1293,14 @@
     "Cmd": "defvol dv",
     "Desc": "Sets the default music volume when music playback is started (0-100). Persists through restarts.",
     "Usage": [
-      "{0}dv 80"
+        "{0}dv 80"
+    ]
+  },
+  "defap": {
+    "Cmd": "defap da",
+    "Desc": "Sets the default auto play value (true/false). Persists through restarts.",
+    "Usage": [
+        "{0}defap true"
     ]
   },
   "max": {
