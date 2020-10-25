@@ -158,7 +158,7 @@ namespace NadekoBot.Modules.Music.Services
                             // ignored
                         }
 
-                        var usercount = (await voiceCh.GetUsersAsync().FlattenAsync().ConfigureAwait(false)).Count();
+                        var usercount = (await voiceCh.GetUsersAsync().FlattenAsync().ConfigureAwait(false)).Where(user => !user.IsBot).Count();
 
                         if (usercount == 0)
                         {
