@@ -158,6 +158,13 @@ namespace NadekoBot.Modules.Music.Services
                             // ignored
                         }
 
+                        var usercount = (await voiceCh.GetUsersAsync().FlattenAsync().ConfigureAwait(false)).Count();
+
+                        if (usercount == 0)
+                        {
+                            await DestroyPlayer(guildId).ConfigureAwait(false);
+                        }
+
                         var (Index, Current) = mp.Current;
                         if (Current == null
                             && !mp.RepeatCurrentSong
