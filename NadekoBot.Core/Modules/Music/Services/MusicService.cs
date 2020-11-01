@@ -32,6 +32,7 @@ namespace NadekoBot.Modules.Music.Services
         private readonly SoundCloudApiService _sc;
         private readonly IBotCredentials _creds;
         private readonly ConcurrentDictionary<ulong, float> _defaultVolumes;
+        private readonly ConcurrentDictionary<ulong, bool> _defaultAutoplay;
 
         public ConcurrentHashSet<ulong> AutoDcServers { get; }
 
@@ -62,6 +63,10 @@ namespace NadekoBot.Modules.Music.Services
                 bot.AllGuildConfigs
                     .ToDictionary(x => x.GuildId, x => x.DefaultMusicVolume));
 
+            _defaultAutoplay = new ConcurrentDictionary<ulong, bool>(
+                bot.AllGuildConfigs
+                    .ToDictionary(x => x.GuildId, x => x.DefaultAutoPlay));
+
             AutoDcServers = new ConcurrentHashSet<ulong>(bot.AllGuildConfigs.Where(x => x.AutoDcFromVc).Select(x => x.GuildId));
 
             Directory.CreateDirectory(MusicDataPath);
@@ -90,6 +95,17 @@ namespace NadekoBot.Modules.Music.Services
             });
         }
 
+        public bool GetDefaultAutoPlay(ulong guildId)
+        {
+            return _defaultAutoplay.GetOrAdd(guildId, (id) =>
+            {
+                using (var uow = _db.GetDbContext())
+                {
+                    return uow.GuildConfigs.ForId(guildId, set => set).DefaultAutoPlay;
+                }
+            });
+        }
+
         public Task<MusicPlayer> GetOrCreatePlayer(ICommandContext context)
         {
             var gUsr = (IGuildUser)context.User;
@@ -114,10 +130,11 @@ namespace NadekoBot.Modules.Music.Services
             return MusicPlayers.GetOrAdd(guildId, _ =>
             {
                 var vol = GetDefaultVolume(guildId);
+                var autoplay = GetDefaultAutoPlay(guildId);
                 if (!_musicSettings.TryGetValue(guildId, out var ms))
                     ms = new MusicSettings();
 
-                var mp = new MusicPlayer(this, ms, _google, voiceCh, textCh, vol);
+                var mp = new MusicPlayer(this, ms, _google, voiceCh, textCh, vol, autoplay);
 
                 IUserMessage playingMessage = null;
                 IUserMessage lastFinishedMessage = null;
@@ -139,6 +156,13 @@ namespace NadekoBot.Modules.Music.Services
                         catch
                         {
                             // ignored
+                        }
+
+                        var usercount = (await voiceCh.GetUsersAsync().FlattenAsync().ConfigureAwait(false)).Where(user => !user.IsBot).Count();
+
+                        if (usercount == 0)
+                        {
+                            await DestroyPlayer(guildId).ConfigureAwait(false);
                         }
 
                         var (Index, Current) = mp.Current;

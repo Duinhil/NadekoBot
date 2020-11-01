@@ -396,6 +396,18 @@ namespace NadekoBot.Modules.Music
 
         [NadekoCommand, Usage, Description, Aliases]
         [RequireContext(ContextType.Guild)]
+        public async Task Defap([Leftover] bool val)
+        {
+            using (var uow = _db.GetDbContext())
+            {
+                uow.GuildConfigs.ForId(ctx.Guild.Id, set => set).DefaultAutoPlay = val;
+                uow.SaveChanges();
+            }
+            await ReplyConfirmLocalizedAsync("defap_set", val).ConfigureAwait(false);
+        }
+
+        [NadekoCommand, Usage, Description, Aliases]
+        [RequireContext(ContextType.Guild)]
         [Priority(1)]
         public async Task SongRemove(int index)
         {
