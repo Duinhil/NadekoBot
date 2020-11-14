@@ -379,7 +379,6 @@
   "music_autoplay_disabled": "Autoplay disabled.",
   "music_autoplay_enabled": "Autoplay enabled.",
   "music_defvol_set": "Default volume set to {0}%",
-  "music_defap_set":  "Default autoplay set to {0}",
   "music_dir_queue_complete": "Directory queue complete.",
   "music_fairplay": "Fairplay",
   "music_finished_song": "Finished song",

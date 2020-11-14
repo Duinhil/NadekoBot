@@ -39,7 +39,6 @@ namespace NadekoBot.Core.Services.Database.Models
         public bool ExclusiveSelfAssignedRoles { get; set; }
         public bool AutoDeleteSelfAssignedRoleMessages { get; set; }
         public float DefaultMusicVolume { get; set; } = 1.0f;
-        public bool DefaultAutoPlay { get; set; } = true;
         public bool VoicePlusTextEnabled { get; set; }
 
         //stream notifications

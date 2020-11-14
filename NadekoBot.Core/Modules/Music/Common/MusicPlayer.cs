@@ -133,14 +133,13 @@ namespace NadekoBot.Modules.Music.Common
         }
 
         public MusicPlayer(MusicService musicService, MusicSettings ms, IGoogleApiService google,
-            IVoiceChannel vch, ITextChannel original, float volume, bool autoplay)
+            IVoiceChannel vch, ITextChannel original, float volume)
         {
             _log = LogManager.GetCurrentClassLogger();
             this.Volume = volume;
             this.VoiceChannel = vch;
             this.OriginalTextChannel = original;
             this.SongCancelSource = new CancellationTokenSource();
-            this.Autoplay = autoplay;
             if (ms.MusicChannelId is ulong cid)
             {
                 this.OutputTextChannel = ((SocketGuild)original.Guild).GetTextChannel(cid) ?? original;
